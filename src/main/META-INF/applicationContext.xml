@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:task="http://www.springframework.org/schema/task" 
+
+	<context:component-scan base-package="ua.com.*">
+	
+	
+	
+
+	
+
+	<bean id="jpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="showSql" value="true" />
+		<property name="generateDdl" value="true" />
+	</bean>
+
+
+	<jpa:repositories base-package="ua.com.dao"/>
+	
+	
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close"
+		p:driverClass="${db.driverClassName}" p:jdbcUrl="${db.databaseurl}"
+		p:user="${db.username}" p:password="${db.password}" p:minPoolSize="5"
+		p:maxPoolSize="10" p:maxIdleTime="200">
+	</bean>
+
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="packagesToScan" value="ua.com.world.entity"></property>
+		<property name="jpaVendorAdapter" ref="jpaVendorAdapter"></property>
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="jpaProperties">
+			<props>
+				<prop key="hibernate.dialect">${db.dialect}</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">${db.hbm2ddl.auto}</prop>
+				<prop key="hibernate.connection.SetBigStringTryClob">true</prop>
+				<prop key="hibernate.jdbc.batch_size">1</prop>
+			</props>
+		</property>
+		<property name="persistenceProvider">
+			<bean class="org.hibernate.jpa.HibernatePersistenceProvider" id="persistenceProvider" />
+		</property>
+	</bean>
+
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+</beans>
